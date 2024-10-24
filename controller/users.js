@@ -1,10 +1,8 @@
 const User = require("../models/users");
-// const { getUsers } = require("../controller/users");
 
 const getUsers = (req, res) => {
   User.find({})
   .then((users) => {
-    throw new Error("AHHH!");
     res.send(users);
   })
   .catch((err) => {
@@ -13,4 +11,16 @@ const getUsers = (req, res) => {
   });
 };
 
-module.exports = { getUsers };
+const createUser = (req, res) => {
+  const {name, avatar } = req.body;
+  User.create({name, avatar})
+  .then((user) => res.status(201).send(user))
+  .catch((err) => {
+    console.error(err);
+    console.log(err.name);
+    return res.status(500).send({ message: err.message });
+  });
+
+}
+
+module.exports = { getUsers, createUser };
