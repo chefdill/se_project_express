@@ -14,13 +14,23 @@ const getUsers = (req, res) => {
 const createUser = (req, res) => {
   const {name, avatar } = req.body;
   User.create({name, avatar})
+  .orFail()
   .then((user) => res.status(201).send(user))
   .catch((err) => {
     console.error(err);
-    console.log(err.name);
-    return res.status(500).send({ message: err.message });
+    if(err.name === "DocumentNotFoundError") {
+      //...
+    } else if (err.name === "CastError") {
+
+    }
+     return res.status(500).send({ message: err.message });
   });
 
-}
+};
 
-module.exports = { getUsers, createUser };
+const getUser = (req, res) => {
+  const { userId } = req.params;
+  User.findById(userId).then((user) => res.status(200).send(user))
+};
+
+module.exports = { getUsers, createUser, getUser };
