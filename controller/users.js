@@ -22,7 +22,7 @@ const createUser = (req, res) => {
     } else  {
       res.status(500).send({ message: err.message });
     }
-     return res.status(500).send({ message: err.message });
+    //  return res.status(500).send({ message: err.message });
   });
 
 };
