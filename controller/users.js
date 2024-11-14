@@ -14,6 +14,7 @@ const getUsers = (req, res) => {
 const createUser = (req, res) => {
   const {name, avatar } = req.body;
   User.create({name, avatar})
+  .orFail()
   .then((user) => res.status(201).send(user))
   .catch((err) => {
     console.error(err);
