@@ -29,7 +29,15 @@ const createUser = (req, res) => {
 
 const getUser = (req, res) => {
   const { userId } = req.params;
-  User.findById(userId).then((user) => res.status(200).send(user))
+  User.findById(userId).then((user) => res.status(200).send(user)).catch((err) => {
+    if(err.name === "DocumentNotFoundError") {
+      return res.status(400).send({ message: "User Not Found"});
+    }
+    if (err.name === "CastError") {
+      return res.status(404).send({ message: "User Not Found" });
+    }
+    return res.status(500).send({ message: "Internal Service Error" });
+  });
 };
 
 module.exports = { getUsers, createUser, getUser };
