@@ -92,14 +92,24 @@ const unlikeItem = (req, res) => {
     });
 };
 
-
 const deleteItem = (req, res) => {
-  const {itemId} =req.params;
+  const { itemId } = req.params;
+
   console.log(itemId);
-  ClothingItem.findByIdAndDelete(itemId).orFail().then((item) => res.status(204).send({}))
-  .catch((e) => {
-    res.status(500).send({message:"Error from deleteItem", e})})
-}
+  ClothingItem.findByIdAndDelete(itemId)
+    .orFail()
+    .then(() => res.status(200).send({ message: "Deletion successful" }))
+    .catch((err) => {
+      console.error(err);
+      if (err.name === "CastError") {
+        return res.status(400).send({ message: err.message });
+      }
+      if (err.name === "DocumentNotFoundError") {
+        return res.status(404).send({ message: err.message });
+      }
+      return res.status(500).send({ message: err.message });
+    });
+};
 
 module.exports = {
   createItem,

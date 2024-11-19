@@ -3,7 +3,7 @@ const User = require("../models/users");
 const getUsers = (req, res) => {
   User.find({})
   .then((users) => {
-    res.send(users);
+    res.status(200).send(users);
   })
   .catch((err) => {
     console.error(err);
@@ -34,7 +34,7 @@ const getUser = (req, res) => {
       return res.status(400).send({ message: "User Not Found"});
     }
     if (err.name === "CastError") {
-      return res.status(404).send({ message: "User Not Found" });
+      return res.status(400).send({ message: "User Not Found" });
     }
     return res.status(500).send({ message: "Internal Service Error" });
   });

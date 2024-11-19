@@ -23,13 +23,13 @@ app.listen(PORT, () => {
 });
 
 
-// app.use((req, res, next) => {
-//   req.user = {
-//     _id: '672e74052a3f1f6bdb37cac2'// paste the _id of the test user created in the previous step
-//   };
-//   next();
-// });
+app.use((req, res, next) => {
+  req.user = {
+    _id: '672e74052a3f1f6bdb37cac2'// paste the _id of the test user created in the previous step
+  };
+  next();
+});
 
-// module.exports.createClothingItem = (req, res) => {
-//   console.log(req.user._id);// _id will become accessible
-// };
+module.exports.createClothingItem = (req, res) => {
+  console.log(req.user._id);// _id will become accessible
+};
