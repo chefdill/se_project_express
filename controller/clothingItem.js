@@ -90,7 +90,7 @@ const unlikeItem = (req, res) => {
         return res.status(400).send({ message: "Item not found" });
       }
       return res
-        .status(500)
+        .status(404)
         .send({ message: "Internal server error" });
     });
 };
