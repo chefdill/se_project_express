@@ -9,7 +9,7 @@ const createItem = (req, res) => {
   const { name, weather, imageUrl } = req.body;
   ClothingItem.create({ name, weather, imageUrl, owner: req.user._id })
     .then((item) => {
-      res.status(200).send({ data: item });
+      res.status(200).send({ item });
     })
     .catch((err) => {
       console.error(err);
