@@ -22,14 +22,6 @@ const getItems = (req, res) => {
   })
 };
 
-const updateItem = (req, res) => {
-  const {itemId} = req.params;
-  const {imageURL} = req.body;
-
-  ClothingItem.findByIdAndUpdate(itemId, {$set: {imageURL}}).orFail().then((item) => res.status(200).send({data:item}))
-  .catch((e) => {
-     res.status(500).send({message:"Error from updateItem", e})})
-}
 
 const likeItem = (req, res) => {
   const { itemId } = req.params;
@@ -92,14 +84,27 @@ const unlikeItem = (req, res) => {
     });
 };
 
+
+const updateItem = (req, res) => {
+  const {itemId} = req.params;
+  const {imageURL} = req.body;
+
+  ClothingItem.findByIdAndUpdate(itemId, {$set: {imageURL}}).orFail().then((item) => res.status(200).send({data:item}))
+  .catch((e) => {
+     res.status(500).send({message:"Error from updateItem", e})})
+}
+
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
 
   console.log(itemId);
   ClothingItem.findByIdAndDelete(itemId)
-    .orFail()
-    .then(() => res.status(200).send({ message: "Deletion successful" }))
-    .catch((err) => {
+    .orFail(() => {
+      const error = new Error("User ID not found");
+      error.name = "DocumentNotFoundError";
+      throw error;
+    })
+    .then(() => res.status(200).send({ message: "Deletion successful" })).catch((err) => {
       console.error(err);
       if (err.name === "CastError") {
         return res.status(400).send({ message: err.message });
@@ -110,6 +115,7 @@ const deleteItem = (req, res) => {
       return res.status(500).send({ message: err.message });
     });
 };
+
 
 module.exports = {
   createItem,
