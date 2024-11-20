@@ -2,26 +2,37 @@ const mongoose = require("mongoose");
 const ClothingItem = require('../models/clothingItem');
 
 const createItem = (req, res) => {
-  console.log(req)
-  console.log(req.body)
+  console.log(req);
+  console.log(req.body);
+  console.log(req.user._id);
 
-  const {name, weather, imageURL} = req.body;
-
-  ClothingItem.create({name, weather, imageURL}).then((item) => {
-    console.log(item);
-    res.send({data:item})
-  }).catch((e) => {
-    res.status(200).send({message: 'Error from createItem', e})
-  })
+  const { name, weather, imageUrl } = req.body;
+  ClothingItem.create({ name, weather, imageUrl, owner: req.user._id })
+    .then((item) => {
+      res.status(200).send({ data: item });
+    })
+    .catch((err) => {
+      console.error(err);
+      if (err.name === "ValidationError") {
+        return res.status(200).send({ message: err.message });
+      }
+      if (err.name === "DocumentNotFoundError") {
+        return res.status(404).send({ message: err.message });
+      }
+      return res.status(500).send({ message: err.message });
+    });
 };
 
 const getItems = (req, res) => {
   ClothingItem.find().then((items) => res.status(200).send((items)))
   .catch((e) => {
+      console.error(err);
+      if (err.name === "ValidationError") {
+        return res.status(400).send({ message: err.message });
+      }
     res.status(500).send({message:"Error from getItems", e})
   })
 };
-
 
 const likeItem = (req, res) => {
   const { itemId } = req.params;
@@ -83,7 +94,6 @@ const unlikeItem = (req, res) => {
         .send({ message: "Internal server error" });
     });
 };
-
 
 const updateItem = (req, res) => {
   const {itemId} = req.params;
