@@ -25,12 +25,12 @@ const createItem = (req, res) => {
 
 const getItems = (req, res) => {
   ClothingItem.find().then((items) => res.status(200).send((items)))
-  .catch((e) => {
+  .catch((err) => {
       console.error(err);
       if (err.name === "ValidationError") {
-        return res.status(400).send({ message: err.message });
+        res.status(400).send({ message: err.message });
       }
-    res.status(500).send({message:"Error from getItems", e})
+    res.status(500).send({message:"Error from getItems", err})
   })
 };
 

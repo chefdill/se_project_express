@@ -29,6 +29,6 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`)
 });
 
-module.exports.createClothingItem = (req, res) => {
-  console.log(req.user._id);// _id will become accessible
-};
+// module.exports.createClothingItem = (req, res) => {
+//   console.log(req.user._id);// _id will become accessible
+// };
