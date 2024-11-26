@@ -81,9 +81,9 @@ const unlikeItem = (req, res) => {
       throw error;
     })
     .then((item) => {
-      if (!item) {
-        return res.status(NOT_FOUND).send({ message: "Item not found" });
-      }
+      // if (!item) {
+      //   return res.status(NOT_FOUND).send({ message: "Item not found" });
+      // }
       return res.status(200).send({ data: item });
     })
     .catch((err) => {
