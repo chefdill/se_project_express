@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const ClothingItem = require('../models/clothingItem');
+const { BAD_REQUEST, NOT_FOUND, DEFAULT } = require('../utils/errors');
 
 const createItem = (req, res) => {
   console.log(req);
@@ -14,12 +15,12 @@ const createItem = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "ValidationError") {
-        return res.status(400).send({ message: err.message });
+        return res.status(BAD_REQUEST).send({ message: err.message });
       }
       if (err.name === "DocumentNotFoundError") {
-        return res.status(404).send({ message: err.message });
+        return res.status(NOT_FOUND).send({ message: err.message });
       }
-      return res.status(500).send({ message: err.message });
+      return res.status(DEFAULT).send({ message: err.message });
     });
 };
 
@@ -28,9 +29,9 @@ const getItems = (req, res) => {
   .catch((err) => {
       console.error(err);
       if (err.name === "ValidationError") {
-        res.status(400).send({ message: err.message });
+        res.status(BAD_REQUEST).send({ message: err.message });
       }
-    res.status(500).send({message:"Error from getItems", err})
+    res.status(DEFAULT).send({message:"Error from getItems", err})
   })
 };
 
@@ -38,7 +39,7 @@ const likeItem = (req, res) => {
   const { itemId } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(itemId)) {
-    return res.status(400).send({ message: "Invalid ID format" });
+    return res.status(BAD_REQUEST).send({ message: "Invalid ID format" });
   }
 
   return ClothingItem.findByIdAndUpdate(
@@ -48,16 +49,16 @@ const likeItem = (req, res) => {
   )
     .then((item) => {
       if (!item) {
-        return res.status(404).send({ message: "Item not found" });
+        return res.status(NOT_FOUND).send({ message: "Item not found" });
       }
       return res.status(200).send({ data: item });
     })
     .catch((err) => {
       if (err.name === "CastError") {
-        return res.status(400).send({ message: "Item not found" });
+        return res.status(BAD_REQUEST).send({ message: "Item not found" });
       }
       return res
-        .status(500)
+        .status(DEFAULT)
         .send({ message: "Internal server error" });
     });
 };
@@ -66,7 +67,7 @@ const unlikeItem = (req, res) => {
   const { itemId } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(itemId)) {
-    return res.status(400).send({ message: "Invalid ID format" });
+    return res.status(BAD_REQUEST).send({ message: "Invalid ID format" });
   }
 
   return ClothingItem.findByIdAndUpdate(
@@ -76,21 +77,21 @@ const unlikeItem = (req, res) => {
   )
     .orFail(() => {
       const error = new Error("Card ID not found");
-      error.statusCode = 404;
+      error.statusCode = NOT_FOUND;
       throw error;
     })
     .then((item) => {
       if (!item) {
-        return res.status(404).send({ message: "Item not found" });
+        return res.status(NOT_FOUND).send({ message: "Item not found" });
       }
       return res.status(200).send({ data: item });
     })
     .catch((err) => {
       if (err.name === "CastError") {
-        return res.status(400).send({ message: "Item not found" });
+        return res.status(BAD_REQUEST).send({ message: "Item not found" });
       }
       return res
-        .status(404)
+        .status(NOT_FOUND)
         .send({ message: "Internal server error" });
     });
 };
@@ -101,7 +102,7 @@ const updateItem = (req, res) => {
 
   ClothingItem.findByIdAndUpdate(itemId, {$set: {imageURL}}).orFail().then((item) => res.status(200).send({data:item}))
   .catch((e) => {
-     res.status(500).send({message:"Error from updateItem", e})})
+     res.status(DEFAULT).send({message:"Error from updateItem", e})})
 }
 
 const deleteItem = (req, res) => {
@@ -117,12 +118,12 @@ const deleteItem = (req, res) => {
     .then(() => res.status(200).send({ message: "Deletion successful" })).catch((err) => {
       console.error(err);
       if (err.name === "CastError") {
-        return res.status(400).send({ message: err.message });
+        return res.status(BAD_REQUEST).send({ message: err.message });
       }
       if (err.name === "DocumentNotFoundError") {
-        return res.status(404).send({ message: err.message });
+        return res.status(NOT_FOUND).send({ message: err.message });
       }
-      return res.status(500).send({ message: err.message });
+      return res.status(DEFAULT).send({ message: err.message });
     });
 };
 
