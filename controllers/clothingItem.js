@@ -28,9 +28,9 @@ const getItems = (req, res) => {
   ClothingItem.find().then((items) => res.status(200).send((items)))
   .catch((err) => {
       console.error(err);
-      if (err.name === "ValidationError") {
-        res.status(BAD_REQUEST).send({ message: err.message });
-      }
+      // if (err.name === "ValidationError") {
+      //   res.status(BAD_REQUEST).send({ message: err.message });
+      // }
     res.status(DEFAULT).send({message:"Error from getItems", err})
   })
 };
