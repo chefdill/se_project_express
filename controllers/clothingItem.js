@@ -80,12 +80,7 @@ const unlikeItem = (req, res) => {
       error.statusCode = NOT_FOUND;
       throw error;
     })
-    .then((item) => {
-      // if (!item) {
-      //   return res.status(NOT_FOUND).send({ message: "Item not found" });
-      // }
-      return res.status(200).send({ data: item });
-    })
+    .then((item) => res.status(200).send({ data: item }))
     .catch((err) => {
       if (err.name === "CastError") {
         return res.status(BAD_REQUEST).send({ message: "Item not found" });
