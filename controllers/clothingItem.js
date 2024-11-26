@@ -96,14 +96,14 @@ const unlikeItem = (req, res) => {
     });
 };
 
-const updateItem = (req, res) => {
-  const {itemId} = req.params;
-  const {imageURL} = req.body;
+// const updateItem = (req, res) => {
+//   const {itemId} = req.params;
+//   const {imageURL} = req.body;
 
-  ClothingItem.findByIdAndUpdate(itemId, {$set: {imageURL}}).orFail().then((item) => res.status(200).send({data:item}))
-  .catch((e) => {
-     res.status(DEFAULT).send({message:"Error from updateItem", e})})
-}
+//   ClothingItem.findByIdAndUpdate(itemId, {$set: {imageURL}}).orFail().then((item) => res.status(200).send({data:item}))
+//   .catch((e) => {
+//      res.status(DEFAULT).send({message:"Error from updateItem", e})})
+// }
 
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
@@ -131,7 +131,6 @@ const deleteItem = (req, res) => {
 module.exports = {
   createItem,
   getItems,
-  updateItem,
   deleteItem,
   likeItem,
   unlikeItem
