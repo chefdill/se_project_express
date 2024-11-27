@@ -17,9 +17,6 @@ const createItem = (req, res) => {
       if (err.name === "ValidationError") {
         return res.status(BAD_REQUEST).send({ message: err.message });
       }
-      if (err.name === "DocumentNotFoundError") {
-        return res.status(NOT_FOUND).send({ message: err.message });
-      }
       return res.status(DEFAULT).send({ message: err.message });
     });
 };
@@ -31,7 +28,7 @@ const getItems = (req, res) => {
       // if (err.name === "ValidationError") {
       //   res.status(BAD_REQUEST).send({ message: err.message });
       // }
-    res.status(DEFAULT).send({message:"Error from getItems", err})
+    res.status(DEFAULT).send({ message:"Error from getItems" })
   })
 };
 
@@ -85,9 +82,11 @@ const unlikeItem = (req, res) => {
       if (err.name === "CastError") {
         return res.status(BAD_REQUEST).send({ message: "Item not found" });
       }
-      return res
+      if(err.statusCode === NOT_FOUND){
+        return res
         .status(NOT_FOUND)
         .send({ message: "Internal server error" });
+      }
     });
 };
 

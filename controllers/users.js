@@ -8,7 +8,7 @@ const getUsers = (req, res) => {
   })
   .catch((err) => {
     console.error(err);
-    return res.status(BAD_REQUEST).send({ message: "An Error has occured" });
+    return res.status(DEFAULT).send({ message: "An Error has occured" });
   });
 };
 
@@ -21,7 +21,7 @@ const createUser = (req, res) => {
     if(err.name === "ValidationError") {
       res.status(BAD_REQUEST).send({ message: err.message });
     } else  {
-      res.status(DEFAULT).send({ message: err.message });
+      res.status(DEFAULT).send({ message: "An error has occurred on the server" });
     }
     //  return res.status(500).send({ message: err.message });
   });
