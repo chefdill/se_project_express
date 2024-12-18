@@ -1,5 +1,5 @@
 const User = require("../models/users");
-const { BAD_REQUEST, NOT_FOUND, DEFAULT } = require('../utils/errors');
+const { BAD_REQUEST, NOT_FOUND, DEFAULT, CONFLICT_CODE } = require('../utils/errors');
 
 const getUsers = (req, res) => {
   User.find({})
@@ -13,19 +13,69 @@ const getUsers = (req, res) => {
 };
 
 const createUser = (req, res) => {
-  const {name, avatar } = req.body;
-  User.create({name, avatar})
-  .then((user) => res.status(201).send(user))
+  const {name, avatar, email, password } = req.body;
+  return User.findOne({ email })
+  .then((user) => {
+    if (user) {
+      const error = new Error(
+        "The user with the provided email already exists"
+      );
+      error.statusCode = CONFLICT_CODE;
+      throw error;
+    }
+
+    return bcrypt.hash(password, 10).then((hash) =>
+      User.create({
+        name,
+        avatar,
+        email,
+        password: hash,
+      })
+    );
+  })
+  .then((user) => {
+    const userWithoutPassword = user.toObject();
+    delete userWithoutPassword.password;
+    res.status(201).json(userWithoutPassword);
+  })
   .catch((err) => {
     console.error(err);
-    if(err.name === "ValidationError") {
-      res.status(BAD_REQUEST).send({ message: err.message });
-    } else  {
-      res.status(DEFAULT).send({ message: "An error has occurred on the server" });
+    if (err.name === "ValidationError") {
+      return res.status(BAD_REQUEST).send({ message: "Invalid data" });
     }
-    //  return res.status(500).send({ message: err.message });
+    if (err.statusCode === CONFLICT_CODE) {
+      return res
+        .status(CONFLICT_CODE)
+        .send({ message: "The user with the provided email already exists" });
+    }
+    return res
+      .status(DEFAULT)
+      .send({ message: "Internal Service Error" });
   });
+};
 
+const login = (req, res) => {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    return res.status(BAD_REQUEST).send({ message: "Invalid data" });
+  }
+
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
+        expiresIn: "7d",
+      });
+      res.send({ token });
+    })
+    .catch((err) => {
+      console.error(err);
+      if (err.name === "ValidationError") {
+        return res.status(BAD_REQUEST).send({ message: "Invalid data" });
+    }
+    return res
+      .status(DEFAULT)
+      .send({ message: "Internal Service Error" });
+  });
 };
 
 const getUser = (req, res) => {
@@ -47,4 +97,4 @@ const getUser = (req, res) => {
   });
 };
 
-module.exports = { getUsers, createUser, getUser };
+module.exports = { getUsers, createUser, getUser, login };
