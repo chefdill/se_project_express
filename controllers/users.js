@@ -78,8 +78,8 @@ const login = (req, res) => {
   });
 };
 
-const getUser = (req, res) => {
-  const { userId } = req.params;
+const getCurrentUser = (req, res) => {
+  const { userId } = req.user._id;
   User.findById(userId)
   .orFail(() => {
     const error = new Error("User ID not found");
@@ -97,4 +97,4 @@ const getUser = (req, res) => {
   });
 };
 
-module.exports = { getUsers, createUser, getUser, login };
+module.exports = { getUsers, createUser, getCurrentUser, login };
