@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const ClothingItem = require('../models/clothingItem');
-const { BAD_REQUEST, NOT_FOUND, DEFAULT } = require('../utils/errors');
+const { BAD_REQUEST, NOT_FOUND, DEFAULT, FOREBIDDEN_CODE } = require('../utils/errors');
 
 const createItem = (req, res) => {
   console.log(req);
@@ -101,14 +101,20 @@ const unlikeItem = (req, res) => {
 
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
-
-  console.log(itemId);
   ClothingItem.findByIdAndDelete(itemId)
-    .orFail(() => {
+    .then((item) => {
+      if (!item) {
       const error = new Error("User ID not found");
       error.name = "DocumentNotFoundError";
       throw error;
-    })
+    }
+    if (item.owner.toString() !== loggedInUserId) {
+      // Return a 403 status if the user doesn't own the item
+      return res.status(403).send({ message: "Forbidden: You cannot delete this item" });
+    }
+    // Proceed to delete the item
+    return item.deleteOne();
+  })
     .then(() => res.status(200).send({ message: "Deletion successful" })).catch((err) => {
       console.error(err);
       if (err.name === "CastError") {
