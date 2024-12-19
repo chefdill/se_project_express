@@ -97,4 +97,32 @@ const getCurrentUser = (req, res) => {
   });
 };
 
-module.exports = { getUsers, createUser, getCurrentUser, login };
+const updateProfile = (req, res) => {
+  const { name, avatar } = req.body;
+  const { userId } = req.user._id;
+
+  return User.findByIdAndUpdate(
+    userId,
+    { name, avatar },
+    { new: true, runValidators: true },
+  )
+    .then((updateUser) => {
+      if (!updateUser) {
+        return res.status(NOT_FOUND).send({ message: "User Not Found" });
+      }
+        res.status(200).send(updateUser);
+      })
+        .catch((err) => {
+          if (err.name === "ValidationError") {
+            return res
+            .status(BAD_REQUEST)
+            .send({ message: "Invalid data" });
+        }
+        return res
+        .status(DEFAULT)
+        .send({ message: "Internal Service Error" });
+        });
+    };
+
+
+module.exports = { getUsers, createUser, getCurrentUser, login, updateProfile };
