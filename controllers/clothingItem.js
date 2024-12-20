@@ -87,20 +87,15 @@ const unlikeItem = (req, res) => {
         .status(NOT_FOUND)
         .send({ message: "Internal server error" });
       }
+      return res
+      .status(DEFAULT)
+      .send({ message: err.message });
     });
 };
 
-// const updateItem = (req, res) => {
-//   const {itemId} = req.params;
-//   const {imageURL} = req.body;
-
-//   ClothingItem.findByIdAndUpdate(itemId, {$set: {imageURL}}).orFail().then((item) => res.status(200).send({data:item}))
-//   .catch((e) => {
-//      res.status(DEFAULT).send({message:"Error from updateItem", e})})
-// }
-
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
+  const { userId } = req.user._id;
   ClothingItem.findByIdAndDelete(itemId)
     .then((item) => {
       if (!item) {
@@ -108,9 +103,9 @@ const deleteItem = (req, res) => {
       error.name = "DocumentNotFoundError";
       throw error;
     }
-    if (item.owner.toString() !== loggedInUserId) {
+    if (item.owner.toString() !== userId) {
       // Return a 403 status if the user doesn't own the item
-      return res.status(403).send({ message: "Forbidden: You cannot delete this item" });
+      return res.status(FOREBIDDEN_CODE).send({ message: "Forbidden: You cannot delete this item" });
     }
     // Proceed to delete the item
     return item.deleteOne();
