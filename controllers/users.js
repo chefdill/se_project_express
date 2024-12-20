@@ -1,6 +1,8 @@
-const User = require("../models/users");
-const { BAD_REQUEST, NOT_FOUND, DEFAULT, CONFLICT_CODE } = require('../utils/errors');
 const bcrypt  = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const { JWT_SECRET } = require("../utils/config");
+const User = require("../models/users");
+const { BAD_REQUEST, NOT_FOUND, DEFAULT, CONFLICT_CODE, UNAUTHORIZED } = require('../utils/errors');
 
 const getUsers = (req, res) => {
   User.find({})
@@ -69,6 +71,9 @@ const login = (req, res) => {
       res.send({ token });
     })
     .catch((err) => {
+      if (err.message === "Incorrect email or password") {
+        return res.status(UNAUTHORIZED).send({ message: "Invalid data"})
+     }
       console.error(err);
       if (err.name === "ValidationError") {
         return res.status(BAD_REQUEST).send({ message: "Invalid data" });
@@ -80,7 +85,7 @@ const login = (req, res) => {
 };
 
 const getCurrentUser = (req, res) => {
-  const { userId } = req.user._id;
+  const userId = req.user._id;
   User.findById(userId)
   .orFail(() => {
     const error = new Error("User ID not found");
@@ -100,7 +105,7 @@ const getCurrentUser = (req, res) => {
 
 const updateProfile = (req, res) => {
   const { name, avatar } = req.body;
-  const { userId } = req.user._id;
+  const userId = req.user._id;
 
   return User.findByIdAndUpdate(
     userId,
@@ -111,7 +116,7 @@ const updateProfile = (req, res) => {
       if (!updateUser) {
         return res.status(NOT_FOUND).send({ message: "User Not Found" });
       }
-        res.status(200).send(updateUser);
+        return res.status(200).send(updateUser);
       })
         .catch((err) => {
           if (err.name === "ValidationError") {

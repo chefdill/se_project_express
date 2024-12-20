@@ -17,7 +17,7 @@ const createItem = (req, res) => {
       if (err.name === "ValidationError") {
         return res.status(BAD_REQUEST).send({ message: err.message });
       }
-      return res.status(DEFAULT).send({ message: err.message });
+      return res.status(DEFAULT).send({ message: "An error has occurred on the server" });
     });
 };
 
@@ -28,12 +28,12 @@ const getItems = (req, res) => {
       // if (err.name === "ValidationError") {
       //   res.status(BAD_REQUEST).send({ message: err.message });
       // }
-    res.status(DEFAULT).send({ message:"Error from getItems" })
+    res.status(DEFAULT).send({ message:"An error has occurred on the server" })
   })
 };
 
 const likeItem = (req, res) => {
-  const { itemId } = req.params;
+  const itemId = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(itemId)) {
     return res.status(BAD_REQUEST).send({ message: "Invalid ID format" });
@@ -56,12 +56,12 @@ const likeItem = (req, res) => {
       }
       return res
         .status(DEFAULT)
-        .send({ message: "Internal server error" });
+        .send({ message: "An error has occurred on the server" });
     });
 };
 
 const unlikeItem = (req, res) => {
-  const { itemId } = req.params;
+  const itemId = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(itemId)) {
     return res.status(BAD_REQUEST).send({ message: "Invalid ID format" });
@@ -89,14 +89,14 @@ const unlikeItem = (req, res) => {
       }
       return res
       .status(DEFAULT)
-      .send({ message: err.message });
+      .send({ message: "An error has occurred on the server" });
     });
 };
 
 const deleteItem = (req, res) => {
-  const { itemId } = req.params;
-  const { userId } = req.user._id;
-  ClothingItem.findByIdAndDelete(itemId)
+  const itemId = req.params;
+  const userId = req.user._id;
+  ClothingItem.findById(itemId)
     .then((item) => {
       if (!item) {
       const error = new Error("User ID not found");
@@ -108,9 +108,10 @@ const deleteItem = (req, res) => {
       return res.status(FOREBIDDEN_CODE).send({ message: "Forbidden: You cannot delete this item" });
     }
     // Proceed to delete the item
-    return item.deleteOne();
+    return item.deleteOne()
+    .then(() => res.status(200).send({ message: "Deletion successful" }));
   })
-    .then(() => res.status(200).send({ message: "Deletion successful" })).catch((err) => {
+    .catch((err) => {
       console.error(err);
       if (err.name === "CastError") {
         return res.status(BAD_REQUEST).send({ message: err.message });
@@ -118,7 +119,7 @@ const deleteItem = (req, res) => {
       if (err.name === "DocumentNotFoundError") {
         return res.status(NOT_FOUND).send({ message: err.message });
       }
-      return res.status(DEFAULT).send({ message: err.message });
+      return res.status(DEFAULT).send({ message: "An error has occurred on the server" });
     });
 };
 
