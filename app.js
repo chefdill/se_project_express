@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const routes = require('./routes');
 const mainRouter = require("./routes/index");
+const cors = require("cors");
 
 const app = express();
 const { PORT = 3001 } = process.env;
@@ -13,15 +14,10 @@ mongoose
 })
 .catch(console.error);
 
-// app.use((req, res, next) => {
-//   req.user = {
-//     _id: '672e74052a3f1f6bdb37cac2'// paste the _id of the test user created in the previous step
-//   };
-//   next();
-// });
-
 app.use(express.json())
 app.use(routes);
+
+app.use(cors());
 
 app.use("/", mainRouter);
 
@@ -29,10 +25,7 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`)
 });
 
-app.use((req, res) => {
-  res.status(404).send('404 Error: Page Not Found');
-});
+// app.use((req, res) => {
+//   res.status(404).send('404 Error: Page Not Found');
+// });
 
-// module.exports.createClothingItem = (req, res) => {
-//   console.log(req.user._id);// _id will become accessible
-// };
