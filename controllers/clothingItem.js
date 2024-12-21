@@ -25,15 +25,12 @@ const getItems = (req, res) => {
   ClothingItem.find().then((items) => res.status(200).send((items)))
   .catch((err) => {
       console.error(err);
-      // if (err.name === "ValidationError") {
-      //   res.status(BAD_REQUEST).send({ message: err.message });
-      // }
     res.status(DEFAULT).send({ message:"An error has occurred on the server" })
   })
 };
 
 const likeItem = (req, res) => {
-  const itemId = req.params;
+  const { itemId} = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(itemId)) {
     return res.status(BAD_REQUEST).send({ message: "Invalid ID format" });
@@ -61,7 +58,7 @@ const likeItem = (req, res) => {
 };
 
 const unlikeItem = (req, res) => {
-  const itemId = req.params;
+  const { itemId } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(itemId)) {
     return res.status(BAD_REQUEST).send({ message: "Invalid ID format" });
@@ -94,7 +91,7 @@ const unlikeItem = (req, res) => {
 };
 
 const deleteItem = (req, res) => {
-  const itemId = req.params;
+  const { itemId } = req.params;
   const userId = req.user._id;
   ClothingItem.findById(itemId)
     .then((item) => {
