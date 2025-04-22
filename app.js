@@ -27,6 +27,7 @@ app.use(errorLogger); //enabling the error logger
 
 app.use("/", mainRouter);
 app.use(errors()); //celebrate error handler
+console.log(errors);
 app.use(errorHandler); //centralized error handler
 
 app.listen(PORT, () => {
