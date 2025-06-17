@@ -25,7 +25,6 @@ app.use(requestLogger);
 app.use(routes);
 
 app.use(errorLogger); //enabling the error logger
-
 app.use("/", mainRouter);
 app.use(errors()); //celebrate error handler
 console.log(errors);
