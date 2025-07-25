@@ -36,6 +36,10 @@ module.exports.validateInfoBody = celebrate({
           'string.max': 'Name must be less than 30 characters long',
           'string.empty': 'Name is required',
         }),
+        weather: Joi.string().required().valid('hot', 'warm', 'cold').messages({
+          'string.empty': 'Weather is required',
+          'any.only': 'Weather must be hot, warm, or cold',
+        }),
         avatar: Joi.string().required().custom(validateUrl).messages({
           'string.uri': 'Invalid avatar URL',
           'string.empty': 'Avatar URL is required',
@@ -67,6 +71,20 @@ module.exports.validateCardId = celebrate({
         name: Joi.string().required().min(24).messages({
           'string.min': 'Minimum length is 24 characters',
           'string.empty': 'User ID is required',
+        }),
+    }),
+});
+
+module.exports.validateProfileBody = celebrate({
+    body: Joi.object().keys({
+        name: Joi.string().required().min(2).max(30).messages({
+          'string.min': 'Name must be at least 2 characters long',
+          'string.max': 'Name must be less than 30 characters long',
+          'string.empty': 'Name is required',
+        }),
+        avatar: Joi.string().required().custom(validateUrl).messages({
+          'string.uri': 'Invalid avatar URL',
+          'string.empty': 'Avatar URL is required',
         }),
     }),
 });
