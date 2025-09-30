@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const ClothingItem = require('../models/clothingItem');
-const { BAD_REQUEST, NOT_FOUND, DEFAULT, FOREBIDDEN_CODE } = require('../utils/errors');
+const { BAD_REQUEST_CODE, NOT_FOUND, DEFAULT, FOREBIDDEN_CODE, CONFLICT_CODE } = require('../utils/errors/errors');
 
 const createItem = (req, res) => {
   console.log(req);
@@ -9,15 +9,15 @@ const createItem = (req, res) => {
 
   const { name, weather, imageUrl } = req.body;
   ClothingItem.create({ name, weather, imageUrl, owner: req.user._id })
-    .then((item) => {
-      res.status(200).send({ item });
-    })
+    .then((item) => res.status(201).send({ item }))
     .catch((err) => {
-      console.error(err);
       if (err.name === "ValidationError") {
-        return res.status(BAD_REQUEST).send({ message: err.message });
+        next(new BAD_REQUEST_CODE("Invalid item data"));
+      } else if (err.code === 11000){
+        next(new CONFLICT_CODE("Duplicate email error"));
+      } else {
+        next(DEFAULT); // pass to global error handler
       }
-      return res.status(DEFAULT).send({ message: "An error has occurred on the server" });
     });
 };
 
