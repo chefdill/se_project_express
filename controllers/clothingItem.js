@@ -1,6 +1,10 @@
 const mongoose = require("mongoose");
 const ClothingItem = require('../models/clothingItem');
-const { BAD_REQUEST_CODE, NOT_FOUND, DEFAULT, FOREBIDDEN_CODE, CONFLICT_CODE } = require('../utils/errors/errors');
+const { BAD_REQUEST_CODE } = require('../utils/errors/bad-request-err');
+const { NOT_FOUND_CODE } = require('../utils/errors/not-found-err');
+const { DEFAULT_CODE } = require('../utils/errors/default-err');
+const { FOREBIDDEN_CODE } = require('../utils/errors/forebidden-code-err');
+const { CONFLICT_CODE } = require('../utils/errors/conflict-code-err');
 
 const createItem = (req, res) => {
   console.log(req);
@@ -16,26 +20,23 @@ const createItem = (req, res) => {
       } else if (err.code === 11000){
         next(new CONFLICT_CODE("Duplicate email error"));
       } else {
-        next(DEFAULT); // pass to global error handler
+        next(DEFAULT_CODE); // pass to global error handler
       }
     });
 };
 
 const getItems = (req, res) => {
   ClothingItem.find().then((items) => res.status(200).send((items)))
-  .catch((err) => {
-      console.error(err);
-    res.status(DEFAULT).send({ message:"An error has occurred on the server" })
+  .catch(() => {
+    next(new DEFAULT_CODE ("An error has occurred on the server"));
   })
 };
 
 const likeItem = (req, res) => {
   const { itemId} = req.params;
-
   if (!mongoose.Types.ObjectId.isValid(itemId)) {
-    return res.status(BAD_REQUEST).send({ message: "Invalid ID format" });
+    return next(new BAD_REQUEST_CODE("Invalid ID format"));
   }
-
   return ClothingItem.findByIdAndUpdate(
     itemId,
     { $addToSet: { likes: req.user._id } },
@@ -43,17 +44,15 @@ const likeItem = (req, res) => {
   )
     .then((item) => {
       if (!item) {
-        return res.status(NOT_FOUND).send({ message: "Item not found" });
+        return next(new NOT_FOUND_CODE('Item not found'));
       }
       return res.status(200).send({ data: item });
     })
     .catch((err) => {
       if (err.name === "CastError") {
-        return res.status(BAD_REQUEST).send({ message: "Item not found" });
+        return next(new BAD_REQUEST_CODE('Item not found'));
       }
-      return res
-        .status(DEFAULT)
-        .send({ message: "An error has occurred on the server" });
+      return next(new DEFAULT_CODE("An error has occurred on the server"));
     });
 };
 
@@ -61,7 +60,7 @@ const unlikeItem = (req, res) => {
   const { itemId } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(itemId)) {
-    return res.status(BAD_REQUEST).send({ message: "Invalid ID format" });
+    return next(new BAD_REQUEST_CODE("Invalid ID format"));
   }
 
   return ClothingItem.findByIdAndUpdate(
@@ -71,22 +70,18 @@ const unlikeItem = (req, res) => {
   )
     .orFail(() => {
       const error = new Error("Card ID not found");
-      error.statusCode = NOT_FOUND;
+      error.statusCode = NOT_FOUND_CODE;
       throw error;
     })
     .then((item) => res.status(200).send({ data: item }))
     .catch((err) => {
       if (err.name === "CastError") {
-        return res.status(BAD_REQUEST).send({ message: "Item not found" });
+        return next(new BAD_REQUEST_CODE('Item not found'));
       }
-      if(err.statusCode === NOT_FOUND){
-        return res
-        .status(NOT_FOUND)
-        .send({ message: "Internal server error" });
+      if(err.statusCode === NOT_FOUND_CODE){
+        return next(new NOT_FOUND_CODE("Internal server error"));
       }
-      return res
-      .status(DEFAULT)
-      .send({ message: "An error has occurred on the server" });
+      return next(new DEFAULT_CODE("An error has occurred on the server"));
     });
 };
 
@@ -102,7 +97,7 @@ const deleteItem = (req, res) => {
     }
     if (item.owner.toString() !== userId) {
       // Return a 403 status if the user doesn't own the item
-      return res.status(FOREBIDDEN_CODE).send({ message: "Forbidden: You cannot delete this item" });
+      return next(new FOREBIDDEN_CODE("Forbidden: You cannot delete this item"));
     }
     // Proceed to delete the item
     return item.deleteOne()
@@ -111,12 +106,12 @@ const deleteItem = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "CastError") {
-        return res.status(BAD_REQUEST).send({ message: err.message });
+        return next(new BAD_REQUEST_CODE(message: err.message));
       }
       if (err.name === "DocumentNotFoundError") {
-        return res.status(NOT_FOUND).send({ message: err.message });
+        return next(new NOT_FOUND_CODE(message: err.message));
       }
-      return res.status(DEFAULT).send({ message: "An error has occurred on the server" });
+      return next(new DEFAULT_CODE('An error has occurred on the server'));
     });
 };
 
