@@ -106,10 +106,10 @@ const deleteItem = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "CastError") {
-        return next(new BAD_REQUEST_CODE(message: err.message));
+        return next(new BAD_REQUEST_CODE('Item not found'));
       }
       if (err.name === "DocumentNotFoundError") {
-        return next(new NOT_FOUND_CODE(message: err.message));
+        return next(new NOT_FOUND_CODE("Internal server error"));
       }
       return next(new DEFAULT_CODE('An error has occurred on the server'));
     });
