@@ -6,13 +6,14 @@ const { DEFAULT_CODE } = require('../utils/errors/default-err');
 const { FOREBIDDEN_CODE } = require('../utils/errors/forebidden-code-err');
 const { CONFLICT_CODE } = require('../utils/errors/conflict-code-err');
 
-const createItem = (req, res) => {
+// create item function
+const createItem = (req, res, next) => {
   console.log(req);
   console.log(req.body);
   console.log(req.user._id);
 
   const { name, weather, imageUrl } = req.body;
-  ClothingItem.create({ name, weather, imageUrl, owner: req.user._id })
+  ClothingItem.create({ name, weather, imageUrl, owner: req.user._id, next })
     .then((item) => res.status(201).send({ item }))
     .catch((err) => {
       if (err.name === "ValidationError") {
@@ -25,14 +26,16 @@ const createItem = (req, res) => {
     });
 };
 
-const getItems = (req, res) => {
+// get items function
+const getItems = (req, res, next) => {
   ClothingItem.find().then((items) => res.status(200).send((items)))
   .catch(() => {
     next(new DEFAULT_CODE ("An error has occurred on the server"));
   })
 };
 
-const likeItem = (req, res) => {
+// lile items function
+const likeItem = (req, res, next) => {
   const { itemId} = req.params;
   if (!mongoose.Types.ObjectId.isValid(itemId)) {
     return next(new BAD_REQUEST_CODE("Invalid ID format"));
@@ -56,7 +59,8 @@ const likeItem = (req, res) => {
     });
 };
 
-const unlikeItem = (req, res) => {
+// unlike items function
+const unlikeItem = (req, res, next) => {
   const { itemId } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(itemId)) {
@@ -85,7 +89,8 @@ const unlikeItem = (req, res) => {
     });
 };
 
-const deleteItem = (req, res) => {
+// delete item function
+const deleteItem = (req, res, next) => {
   const { itemId } = req.params;
   const userId = req.user._id;
   ClothingItem.findById(itemId)

@@ -6,7 +6,6 @@ const { BAD_REQUEST_CODE } = require('../utils/errors/bad-request-err');
 const { NOT_FOUND_CODE } = require('../utils/errors/not-found-err');
 const { NOT_AUTHORIZED_CODE } = require('../utils/errors/unauthorized-err');
 const { DEFAULT_CODE } = require('../utils/errors/default-err');
-const { FOREBIDDEN_CODE } = require('../utils/errors/forebidden-code-err');
 const { CONFLICT_CODE } = require('../utils/errors/conflict-code-err');
 
 // const getUsers = (req, res) => {
@@ -20,7 +19,7 @@ const { CONFLICT_CODE } = require('../utils/errors/conflict-code-err');
 //   });
 // };
 
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
   const {name, avatar, email, password } = req.body;
   return User.findOne({ email })
   .then((user) => {
@@ -58,7 +57,7 @@ const createUser = (req, res) => {
   });
 };
 
-const login = (req, res) => {
+const login = (req, res, next) => {
   const { email, password } = req.body;
   if (!email || !password) {
     return next(new BAD_REQUEST_CODE("Invalid data"));
@@ -83,7 +82,7 @@ const login = (req, res) => {
   });
 };
 
-const getCurrentUser = (req, res) => {
+const getCurrentUser = (req, res, next) => {
   const userId = req.user._id;
   User.findById(userId)
   .orFail(() => {
@@ -102,7 +101,7 @@ const getCurrentUser = (req, res) => {
   });
 };
 
-const updateProfile = (req, res) => {
+const updateProfile = (req, res, next) => {
   const { name, avatar } = req.body;
   const userId = req.user._id;
 

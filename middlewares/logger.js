@@ -1,7 +1,7 @@
 const winston = require('winston');
 const expressWinston = require('express-winston');
 
-//create our loggers
+// create our loggers
 const messageFormat = winston.format.combine(
   winston.format.timestamp(),
   winston.format.printf(
@@ -10,7 +10,7 @@ const messageFormat = winston.format.combine(
   )
 );
 
-//create a request logger
+// create a request logger
 const requestLogger = expressWinston.logger({
   transports: [
     new winston.transports.Console({
@@ -23,7 +23,7 @@ const requestLogger = expressWinston.logger({
   ],
 });
 
-//create an error logger
+// create an error logger
 const errorLogger = expressWinston.errorLogger({
   transports: [
     new winston.transports.File({ filename: 'error.log' }),
