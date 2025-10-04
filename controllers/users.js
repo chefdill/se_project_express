@@ -8,17 +8,6 @@ const { NOT_AUTHORIZED_CODE } = require('../utils/errors/unauthorized-err');
 const { DEFAULT_CODE } = require('../utils/errors/default-err');
 const { CONFLICT_CODE } = require('../utils/errors/conflict-code-err');
 
-// const getUsers = (req, res) => {
-//   User.find({})
-//   .then((users) => {
-//     res.status(200).send(users);
-//   })
-//   .catch((err) => {
-//     console.error(err);
-//     return res.status(DEFAULT).send({ message: "An Error has occured" });
-//   });
-// };
-
 const createUser = (req, res, next) => {
   const {name, avatar, email, password } = req.body;
   return User.findOne({ email })

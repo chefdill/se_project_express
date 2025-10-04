@@ -7,7 +7,6 @@ const {
 const {
   createItem,
   getItems,
-  // updateItem,
   deleteItem,
   likeItem,
   unlikeItem
@@ -16,21 +15,18 @@ const {
 // CRUD
 
 // CREATE
-router.post('/', validateCardBody, auth, createItem);
+router.post('/', auth, validateCardBody, createItem);
 
 // READ
 router.get('/', getItems);
 
-// UPDATE
-// router.put('/:itemId', updateItem);
-
 // LIKE ITEM
-router.put('/:itemId/likes', validateCardId, auth, likeItem);
+router.put('/:itemId/likes', auth, validateCardId, likeItem);
 
 // UNLIKE
-router.delete('/:itemId/likes', validateCardId, auth, unlikeItem);
+router.delete('/:itemId/likes', auth, validateCardId, auth, unlikeItem);
 
 // DELETE
-router.delete('/:itemId', validateCardId, auth, deleteItem);
+router.delete('/:itemId', auth, validateCardId, deleteItem);
 
 module.exports = router;
