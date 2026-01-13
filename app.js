@@ -6,7 +6,6 @@ const { errors } = require('celebrate');
 const routes = require('./routes');
 const { errorHandler } = require('./middlewares/error-handlers');
 const { requestLogger, errorLogger  } = require('./middlewares/logger');
-const __dirname = path.resolve();
 
 const app = express();
 const { PORT = 3001 } = process.env;
@@ -34,11 +33,9 @@ app.use(errorLogger); // enabling the error logger
 app.use(errors()); // celebrate error handler
 app.use(errorHandler); // centralized error handler
 
-app.use(express.static(path.join(__dirname, "../se_project_react/build")));
-
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../se_project_react/build", "index.html"));
-});
+// app.get("*", (req, res) => {
+//   res.sendFile(path.join(__dirname, "../se_project_react/build", "index.html"));
+// });
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`)
