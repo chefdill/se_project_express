@@ -33,11 +33,7 @@ app.use(errorLogger); // enabling the error logger
 app.use(errors()); // celebrate error handler
 app.use(errorHandler); // centralized error handler
 
-// app.get("*", (req, res) => {
-//   res.sendFile(path.join(__dirname, "../se_project_react/build", "index.html"));
-// });
-
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0',() => {
   console.log(`Server is running on port ${PORT}`)
 });
 
