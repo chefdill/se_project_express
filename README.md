@@ -13,7 +13,7 @@ Before committing your code, make sure you edit the file `sprint.txt` in the roo
 
 ## Live Application
 
-[Visit the deployed app](https://whatstheweather.blinklab.com/items)
+[Visit the deployed app](https://whatstheweather.ohbah.com/)
 
 ## Front-end: https://github.com/chefdill/se_project_react
 
