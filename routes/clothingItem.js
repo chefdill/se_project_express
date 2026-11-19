@@ -18,7 +18,7 @@ const {
 router.post('/', auth, validateCardBody, createItem);
 
 // READ
-router.get('/items', getItems);
+router.get('/', getItems);
 
 // LIKE ITEM
 router.put('/:itemId/likes', auth, validateCardId, likeItem);
